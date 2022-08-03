@@ -1,4 +1,6 @@
 from requests_html import HTMLSession
+import concurrent.futures
+import analyzer
 import time
 
 
@@ -27,23 +29,3 @@ class Reviews:
             data = {'title': title, 'body': body}
             total.append(data)
         return total
-
-
-def main():
-    amz = Reviews(asin='B09TVVGXWS')
-
-    results = []
-    for i in range(1, 250):
-        review = amz.pagination(i)
-        time.sleep(0.3)
-        #if review is not False:
-        results.append(amz.parse(review))
-        #else:
-        #    print('no more pages')
-        #    break
-
-    print(results)
-
-
-if __name__ == '__main__':
-    main()

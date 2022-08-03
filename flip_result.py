@@ -1,5 +1,6 @@
 import analyzer
 import flip_rev_scraper as flp
+import concurrent.futures
 import time
 
 
@@ -13,9 +14,11 @@ def get_results(url):
         amz_rev = flp.Reviews(asin=asin_code[5])
 
         results = []
-        count = 0
-        for i in range(1, 250):
-            review = amz_rev.pagination(i)
+        NUM_THREADS = 30
+
+        def get_data(page):
+
+            review = amz_rev.pagination(page)
             time.sleep(0.3)
             # if review is not False:
             results.append(amz_rev.parse(review))
@@ -23,9 +26,10 @@ def get_results(url):
             #    print('no more pages')
             #    break
 
-            # print('\r', 'Running.. page no.', str(count), end='')
-            count = count + 1
-
+        pages = range(1, 30)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+            executor.map(get_data, pages)
+        # print(results)
         sm = []
         for i in results:
             for j in i:
